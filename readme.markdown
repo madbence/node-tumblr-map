@@ -16,7 +16,7 @@ $ npm i
 
 ## usage
 
-u need oauth credentials in order to use the api, you can register a new app here.
+u need oauth credentials in order to use the api, you can register a new app [here](https://www.tumblr.com/oauth/apps).
 
 ```sh
 $ export CONSUMER_KEY=...
