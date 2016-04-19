@@ -1,4 +1,5 @@
 import api from './api';
+import cld from 'cld';
 
 async function lastPosts(name) {
   let offset = 0;
@@ -22,29 +23,16 @@ async function lastPosts(name) {
           date: new Date(post.timestamp * 1000),
           src: post.reblogged_from_name || null,
           dst: name,
+          root: post.reblogged_root_name || null,
           comment: post.reblog ? post.reblog.comment : null,
+          root_comment: (post.trail && post.trail[0] && post.trail[0].content) || null,
+          tags: post.tags
         })));
       }
     }
   }
   return posts;
 }
-
-const triggers = [
-  /\b(a|e)zt?\b/i,
-  /(\s+|\.|,|^)é(n|s)\b/i,
-  /\bmost\b/i,
-  /\bmert\b/i,
-  /\bnapom\b/i,
-  /\bigen\b/i,
-  /\bmég\b/i,
-  /\bhát\b/i,
-  /\bsör\b/i,
-  /\bkell\b/i,
-  /\bhogy\b/i,
-  /\brossz\b/i,
-  /\bmár\b/i,
-]
 
 const queue = [{
   name: 'napszemuvegbe',
@@ -69,12 +57,14 @@ async function pick() {
     let pass = false;
     for (const post of posts) {
       if (!post.comment) continue;
-      if (post.comment.match(/ő|ű/i) || triggers.some(word => post.comment.match(word))) {
-        if (!pass) {
-          console.error('\x1b[K' + item.name + ' PASS: ' + post.comment.replace(/<.*?>|\n/g, ''));
+      cld.detect(post.comment, function(err, result) {
+        if (result && result.reliable && result.languages[0].name=='HUNGARIAN') {
+          if (!pass) {
+            console.error('\x1b[K' + item.name + ' PASS: ' + post.comment.replace(/<.*?>|\n/g, ''));
+          }
+          pass = true;
         }
-        pass = true;
-      }
+      });
       if (!sources[post.src]) sources[post.src] = 0;
       sources[post.src]++;
     }
