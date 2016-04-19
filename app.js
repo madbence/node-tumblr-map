@@ -25,6 +25,7 @@ async function lastPosts(name) {
           dst: name,
           root: post.reblogged_root_name || null,
           comment: post.reblog ? post.reblog.comment : null,
+          root_comment: (post.trail && post.trail[0] && post.trail[0].content) || null,
           tags: post.tags
         })));
       }
