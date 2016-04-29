@@ -7,8 +7,10 @@ process.stdin
   .pipe(split())
   .on('data', line => {
     try {
-      const item = JSON.parse(line);
-      data.push(item);
+      if(line.startsWith('POST')) {
+        const item = JSON.parse(line.replace(/^POST /,''));
+        data.push(item);
+      }
     } catch (e) {
       console.error(line);
       console.error(e.stack);
